@@ -18,10 +18,10 @@ class S_Itemset
             next=null;
         }
     }//end: class Symb
-    
+
     Symb head=null;
     Symb rp;
-    
+
     void separate(int code,int items)
     {
         int c;
@@ -53,21 +53,21 @@ class S_Itemset
         if(p != null) p.code=-1;
         rp=head;
     }//end: void separate(int,int)
-    
+
     int read()
-    {        
+    {
         if(head==null) return -1;
         if(rp == null || rp.code == -1) return -1;
         int c=rp.code;
         rp=rp.next;
         return c;
     }//end: int read()
-    
+
     void reset()
     {
         if(head != null) rp=head;
     }//end: void reset()
-    
+
     int length()
     {
     	reset();
@@ -76,7 +76,7 @@ class S_Itemset
     	reset();
     	return i;
     }//end: void length()
-    
+
 }//end: class S_Itemset
 
 
@@ -94,7 +94,7 @@ public class apriori extends JFrame
 		float liftRatio;
 		Rule next;
 	}//end: class Rule
-	
+
 	private static String dset;
     private static Rule r=null;
     private static String[] header;
@@ -103,7 +103,7 @@ public class apriori extends JFrame
     private static float minsup;
     private static float minconf;
     private static byte k=1;
-    
+
     private static Pineapple.Slice next(Pineapple.Slice sl,char mode)
     {
         int v=(mode=='C')? (k-1):(k);
@@ -115,7 +115,7 @@ public class apriori extends JFrame
         }
         return null;
     }//end: Pineapple.Slice next(Pineapple.Slice,char)
-    
+
     private static int max(int code)
     {
         int c;
@@ -126,7 +126,7 @@ public class apriori extends JFrame
         }while(code > 0);
         return c;
     }//end: int max(int)
-    
+
     private static boolean candidate(Pineapple mem)
     {
         k++;
@@ -134,12 +134,12 @@ public class apriori extends JFrame
         while(sl != null && sl.data.k != k-1)
             sl=sl.next;
         if(sl == null) return false;
-        
+
         Pineapple.Slice nsl;
         S_Itemset sobj=new S_Itemset();
         int max,c,code;
         boolean flag=false;
-        
+
         do
         {
             max=max(sl.data.code);
@@ -168,14 +168,14 @@ public class apriori extends JFrame
         }while((sl=next(sl,'C')) != null);
         return flag;
     }//end: boolean candidate(Pineapple)
-    
+
     private static void prune(Pineapple mem)
     {
         S_Itemset sobj1=new S_Itemset();
         S_Itemset sobj2=new S_Itemset();
         int pow,i,j,c1,c2,code;
         Pineapple.Slice sl=mem.linker;
-        
+
         while(sl.data.k != k)
             sl=sl.next;
         do
@@ -215,11 +215,11 @@ public class apriori extends JFrame
             }
         }while((sl=sl.next) != null);
     }//end: void prune(Pineapple)
-    
+
     private static void supportK1(Pineapple mem)
     {
     	Pineapple.Slice sl=mem.linker;
-    	
+
         do
         {
             if(sl.data.support < minsup)
@@ -228,7 +228,7 @@ public class apriori extends JFrame
             }
         }while((sl=sl.next) != null);
     }//end: void supportK1(Pineapple)
-    
+
     private static void support(Pineapple mem)
     {
         Pineapple.Slice fsl=mem.linker;
@@ -240,7 +240,7 @@ public class apriori extends JFrame
         S_Itemset sobj=new S_Itemset();
         int c;
         boolean flag;
-        
+
         try
         {
             BufferedReader dataset=new BufferedReader(new FileReader(dset));
@@ -267,7 +267,7 @@ public class apriori extends JFrame
             }
             dataset.close();
         }catch(IOException e){System.out.println(e.getMessage());System.exit(1);}
-        
+
         sl=fsl;
         while(sl != null)
         {
@@ -278,7 +278,7 @@ public class apriori extends JFrame
             sl=next(sl,'S');
         }
     }//end: void support(Pineapple)
-    
+
     private static void print(Pineapple mem)
     {
         Pineapple.Slice sl=mem.linker;
@@ -304,7 +304,7 @@ public class apriori extends JFrame
         }
         if(flag) System.out.println();
     }//end: void print(Pineapple)
-    
+
     private static void getRules(Pineapple mem,int para1,int para2)
     {
     	Pineapple.Slice sl=mem.linker;
@@ -316,11 +316,11 @@ public class apriori extends JFrame
         boolean flag=false;
         Rule p;
         String s;
-        
+
         while((sl=sl.next) != null)
         {
         	if(sl.data.k == 1) continue;
-        	
+
         	sobj1.separate(sl.data.code,items);
         	pow=(int)Math.pow(2,sl.data.k);
         	for(i=0;i<pow;i++)
@@ -335,7 +335,7 @@ public class apriori extends JFrame
     				if(c2 != 1)		sideL+=c1*Math.pow(items,powL++);
     				else			sideR+=c1*Math.pow(items,powR++);
     			}
-    			
+
                 conf=(float)mem.fetch(sl.data.code).support/(float)mem.fetch(sideL).support;
     			if(conf >= minconf)
     			{
@@ -353,7 +353,7 @@ public class apriori extends JFrame
 					else
 						p.next=r;
 					r=p;
-    				
+
     				s="";
     				sobj.separate(sideL,items);
                     while((c1=sobj.read()) != (-1))
@@ -373,7 +373,7 @@ public class apriori extends JFrame
         if(flag)	System.out.println("\nNo more rules can be generated.");
         else		System.out.println("No association rules.");
         System.out.println("--------------------------------------------------\n");
-        
+
         sortRules();
         int[] colsize={5,7,28,28,10,10,12,10};
         TabledString report=new TabledString(colsize,3);
@@ -403,7 +403,7 @@ public class apriori extends JFrame
         	{
         		s+=header[c1];
         		if(--pow != 0)
-        			s+=", ";	
+        			s+=", ";
         	}
         	report.addData(3,s+" =>");
         	sobj.separate(p.consequent,items);
@@ -429,10 +429,10 @@ public class apriori extends JFrame
         s+="items: "+items+"\n\n";
         s+=report.getString();
         s+="Click anywhere and press Ctrl+A then Ctrl+C, and paste the results on a file.";
-        JOptionPane.showMessageDialog(null,new JTextArea(s),"Association Rules :",1);    
-        
+        JOptionPane.showMessageDialog(null,new JTextArea(s),"Association Rules :",1);
+
     }//end: void getRules(Pineapple,int,int)
-    
+
     private static void readHeader()
     {
     	String filename="";
@@ -442,7 +442,7 @@ public class apriori extends JFrame
     		filename+=dset.charAt(i);
     	}
     	filename+=".dh";
-    	
+
     	header=new String[items];
     	String line;
     	int i;
@@ -456,9 +456,9 @@ public class apriori extends JFrame
     		}
     		file.close();
     	}catch(IOException e){System.out.println(e.getMessage());System.exit(1);}
-    	
+
     }//end: void readHeader()
-    
+
     private static void sortRules()
     {
     	if(r == null) return;
@@ -500,9 +500,9 @@ public class apriori extends JFrame
             }
             if(flag==0) break;
         }
-        
+
     }//end: void sortRules()
-    
+
     private static void getAssociationRules(int para1,int para2,String para3)
     {
     	dset=para3;
@@ -513,7 +513,7 @@ public class apriori extends JFrame
         System.out.println("\nsupport: "+para1+"%");
         System.out.println("confidence: "+para2+"%");
         System.out.println("dataset: "+dset);
-        
+
         try
         {
             BufferedReader dataset=new BufferedReader(new FileReader(dset));
@@ -536,16 +536,16 @@ public class apriori extends JFrame
             }while((line=dataset.readLine()) != null);
             dataset.close();
         }catch(IOException e){System.out.println(e.getMessage());System.exit(1);}
-        
+
         minsup=(float)trans/100*para1;
         supportK1(mem);
-        
+
         System.out.println("trans:"+trans);
         System.out.println("Items: "+items);
         System.out.println("--------------------------------------------------\n");
         mem.sort();
         print(mem);
-        
+
         while(candidate(mem))
         {
             if(k > 2) prune(mem);
@@ -554,12 +554,12 @@ public class apriori extends JFrame
         }
         System.out.println("No more itemsets can be generated.");
         System.out.println("--------------------------------------------------\n");
-        
+
         minconf=(float)1/100*para2;
         getRules(mem,para1,para2);
-        
+
     }//end: void getAssociationRules(int,int,String)
-    
+
     public static void main(String[] args)
     {
         switch(args.length)
@@ -567,10 +567,10 @@ public class apriori extends JFrame
             case 3:
             getAssociationRules(Integer.valueOf(args[0]),Integer.valueOf(args[1]),args[2]);
             System.exit(0);
-            
-            default: 
+
+            default:
             System.out.println("apriori [min_support] [min_confidence] [dataset_file.ds]");
         }
     }//end: main()
-    
+
 }//end: class apriori

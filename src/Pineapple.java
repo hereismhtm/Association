@@ -77,13 +77,13 @@ class Pineapple
             p2s=p2p.path;
         }
         p2s.data=new Itemset(value1,value2,value3);
-        
+
         if(tail!=null)
             tail.next=p2s;
         tail=p2s;
         if(linker==null)
             linker=p2s;
-        
+
         count++;
 
     }//end: void insert(int,byte,int)
@@ -174,14 +174,14 @@ class Pineapple
             }
             if(flag==0) break;
         }
-        
+
         p1=linker;
         while(p1.next!=null)
         {
             p1=p1.next;
         }
         tail=p1;
-        
+
     }//end: void sort()
-    
+
 }//end: class Pineapple
